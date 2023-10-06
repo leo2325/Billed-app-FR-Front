@@ -17,6 +17,7 @@ export default class {
   }
 
   handleClickNewBill = () => {
+    console.log('button clicked'); // for debugging
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
 
@@ -53,7 +54,7 @@ export default class {
             }
           })
           console.log('length', bills.length)
-        return bills
+          return bills
       })
     }
   }
