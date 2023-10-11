@@ -22,7 +22,7 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
 
-  // Utilise une expression régulière pour vérifier l'extension du fichier
+  // Expression régulière pour vérifier l'extension du fichier
   const allowedExtensions = /\.(jpg|jpeg|png)$/i;
   if (!allowedExtensions.test(fileName)) {
     alert('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
