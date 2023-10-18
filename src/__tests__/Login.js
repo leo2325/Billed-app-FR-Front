@@ -94,7 +94,13 @@ describe("Given that I am a user on login page", () => {
         store,
       });
 
+      // Mockez la méthode login pour simuler le succès
+      login.login = jest.fn().mockResolvedValue({ jwt: 'token' });
+
       const handleSubmit = jest.fn(login.handleSubmitEmployee);
+      form.addEventListener("submit", handleSubmit);
+      fireEvent.submit(form);
+
       login.login = jest.fn().mockResolvedValue({});
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);

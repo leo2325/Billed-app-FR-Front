@@ -29,7 +29,7 @@ export default class NewBill {
     fileInput.value = ''; // Efface le champ de saisie de fichier
     return;
   }
-
+  
   const formData = new FormData();
   const email = JSON.parse(localStorage.getItem("user")).email;
   formData.append('file', file);

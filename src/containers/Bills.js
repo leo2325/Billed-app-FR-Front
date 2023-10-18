@@ -22,11 +22,14 @@ export default class {
   }
 
   handleClickIconEye = (icon) => {
-    const billUrl = icon.getAttribute("data-bill-url")
-    const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
-    $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
-    $('#modaleFile').modal('show')
-  }
+    const billUrl = icon.getAttribute("data-bill-url");
+    const modalFile = document.querySelector('#modaleFile');
+    const modalBody = modalFile.querySelector('.modal-body');
+    const imgWidth = Math.floor(modalFile.clientWidth * 0.5);
+    modalBody.innerHTML = `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`;
+    modalFile.classList.add('show');
+  };
+  
 
   getBills = () => {
     if (this.store) {
@@ -39,7 +42,7 @@ export default class {
             try {
               return {
                 ...doc,
-                date: doc.date,
+                date: formatDate(doc.date),
                 status: formatStatus(doc.status)
               }
             } catch(e) {
@@ -48,7 +51,7 @@ export default class {
               console.log(e,'for',doc)
               return {
                 ...doc,
-                date: doc.date,
+                date: format(doc.date),
                 status: formatStatus(doc.status)
               }
             }

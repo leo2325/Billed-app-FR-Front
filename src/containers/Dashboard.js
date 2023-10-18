@@ -145,6 +145,8 @@ export default class {
       this.counter ++
     }
 
+    this.resetEventClick(bills)
+    
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
@@ -152,7 +154,12 @@ export default class {
     return bills
 
   }
-
+  resetEventClick(bills) {
+    bills.forEach(bill => {
+      $(`#open-bill${bill.id}`).off();
+    })
+  }
+  
   getBillsAllUsers = () => {
     if (this.store) {
       return this.store
