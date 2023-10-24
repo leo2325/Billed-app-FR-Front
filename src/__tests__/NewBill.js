@@ -12,36 +12,36 @@ import { ROUTES_PATH } from "../constants/routes.js"
 import router from "../app/Router.js";
 
 
-jest.mock("../app/store", () => mockStore)
+jest.mock("../app/store", () => mockStore) // Mocking comportement de this.store
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     describe("when upload file", () => {
-      
-      function initialisationNewBill(){
+
+      function initialisationNewBill() {
         const html = NewBillUI()
         document.body.innerHTML = html
 
         //Simuler onNavigate
-        const onNavigate = jest.fn(()=>{})
+        const onNavigate = jest.fn(() => { })
 
         //Simuler store
         const store = mockStore
 
         //Crer un user 
         const userObj = {
-          type:"Employee",
-          email:"employee@test.tld",
-          password:"employee",
-          status:"connected"
+          type: "Employee",
+          email: "employee@test.tld",
+          password: "employee",
+          status: "connected"
         }
-        
+
         //Simuler localStore avec le user dedans 
         Object.defineProperty(window, 'localStorage', { value: localStorageMock }) //<-- A voir JS
         window.localStorage.setItem('user', JSON.stringify(userObj))
 
         //Création d'un nouveau NewBill
-        return new NewBill({document,onNavigate,store,locaStore: window.localStorage})
+        return new NewBill({ document, onNavigate, store, locaStore: window.localStorage })
       }
 
       //Déclaration de newbill à utiliser
@@ -50,56 +50,48 @@ describe("Given I am connected as an employee", () => {
         aNewBill = initialisationNewBill()
       });
 
-      test("Then the file is an extention png or jpeg or jpg ", () => {
-        const fileInput = screen.getByTestId('file')//récurépation de l'input de type file
-        const file = new File(['dummy file'], 'test.jpg', {type: 'image/jpg'})//Création d'un fichier test en jpg
-        const event = new Event('change', { bubbles: true })//Création d'un event onChange
-        //Attribution de la valeur de l'input au fichier test
+      test("Then the file is an extension png or jpeg or jpg", () => {
+        const fileInput = screen.getByTestId('file');
+        const file = new File(['dummy file'], 'test.jpg', { type: 'image/jpg' });
+        const event = new Event('change', { bubbles: true });
+      
+        // Espionnez la méthode handleAlert
+        const handleAlertSpy = jest.spyOn(aNewBill, 'handleAlert');
+      
         Object.defineProperty(fileInput, 'files', {
           value: [file]
-        })
-        //Dispatch de l'event
-        fileInput.dispatchEvent(event)
-        // Test de la fonction handleChangeFile
-        // retourne -1 si fichier test est autre chose que l'extension attendu  
-        // sinon pas de retour 
-        expect(aNewBill.handleChangeFile(event)).toBe(undefined)
-      })
+        });
+      
+        fileInput.dispatchEvent(event);
+      
+        // Vérifiez que handleAlert a été appelé avec le message approprié
+        expect(handleAlertSpy).toHaveBeenCalledWith('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
+      
+        // Nettoyer l'espion après le test
+        handleAlertSpy.mockRestore();
+      });
 
       test("Then the file don't accept other extention than png or jpeg or jpg ", () => {
+        spyOn(window, 'alert');
         const fileInput = screen.getByTestId('file')
         //Création d'un fichier test en jpg
-        const file = new File(['dummy file'], 'test.pdf', {type: 'application/pdf'})
+        const file = new File(['dummy file'], 'test.pdf', { type: 'application/pdf' })
         const event = new Event('change', { bubbles: true })
         Object.defineProperty(fileInput, 'files', {
           value: [file]
         })
         fileInput.dispatchEvent(event)
-        // ici 
-        //j'ai 
-        //mis 
-        //"undefined" 
-        //mais 
-        //c'est 
-        //censé 
-        //être 
-        //-1 
-        //mais 
-        //ça 
-        //ne 
-        //marche 
-        //pas 
-        //à 
-        //revoir 
-        expect(aNewBill.handleChangeFile(event)).toBe(undefined)
+        
+        expect(window.alert).toHaveBeenCalledWith('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
+        expect(fileInput.value).toBe('')
       })
     })
 
     //Test d'intégration -> POST Ajouter Erreur 500
     test("POST bill", async () => {
-      localStorage.setItem("user", JSON.stringify({ 
-        type: "Employee", 
-        email: "a@a" 
+      localStorage.setItem("user", JSON.stringify({
+        type: "Employee",
+        email: "a@a"
       }));
       const root = document.createElement("div")
       root.setAttribute("id", "root")
@@ -111,48 +103,48 @@ describe("Given I am connected as an employee", () => {
 
     describe("When an error occurs on API", () => {
       test("POST bill fails with 500 message error", async () => {
-        try{
+        try {
           jest.spyOn(mockStore, "bills")
 
           Object.defineProperty(
-              window,
-              'localStorage',
-              { value: localStorageMock }
+            window,
+            'localStorage',
+            { value: localStorageMock }
           )
-  
+
           window.localStorage.setItem('user', JSON.stringify({
-            type:"Employee",
-            email:"a@a",
-            password:"employee",
-            status:"connected"
+            type: "Employee",
+            email: "a@a",
+            password: "employee",
+            status: "connected"
           }))
-  
+
           window.onNavigate(ROUTES_PATH.NewBill)
-          
+
           const root = document.createElement("div")
           root.setAttribute("id", "root")
           document.body.appendChild(root)
           router()
-          
-          const buttonSubmit = screen.getAllByText('Envoyer')  
+
+          const buttonSubmit = screen.getAllByText('Envoyer')
           buttonSubmit[0].click()
-          
+
           mockStore.bills.mockImplementationOnce(() => {
             return {
-              create : (bill) =>  {
+              create: (bill) => {
                 return Promise.reject(new Error("Erreur 500"))
               }
             }
           })
-          
+
           window.onNavigate(ROUTES_PATH.NewBill)
           await new Promise(process.nextTick);
           const message = screen.queryByText(/Erreur 500/)
-          await waitFor(()=>{
+          await waitFor(() => {
             expect(message).toBeTruthy()
           })
 
-        }catch(error){
+        } catch (error) {
           console.error(error);
         }
       })

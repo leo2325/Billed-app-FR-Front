@@ -15,20 +15,23 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+  handleAlert(message) {
+    window.alert(message);
+  }
+
   handleChangeFile = e => {
-    e.preventDefault()
+    e.preventDefault();
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    const filePath = e.target.value.split(/\\/g);
+    const fileName = filePath[filePath.length-1];
 
-  // Expression régulière pour vérifier l'extension du fichier
-  const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-  if (!allowedExtensions.test(fileName)) {
-    alert('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
-    fileInput.value = ''; // Efface le champ de saisie de fichier
-    return;
-  }
+    const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+    if (!allowedExtensions.test(fileName)) {
+      this.handleAlert('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
+      fileInput.value = ''; // Efface le champ de saisie de fichier
+      return;
+    }
   
   const formData = new FormData();
   const email = JSON.parse(localStorage.getItem("user")).email;

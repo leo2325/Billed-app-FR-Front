@@ -24,17 +24,19 @@ export default class Login {
       status: "connected"
     }
     this.localStorage.setItem("user", JSON.stringify(user))
-    this.login(user)
-      .catch(
-        (err) => this.createUser(user)
-      )
-      .then(() => {
-        this.onNavigate(ROUTES_PATH['Bills'])
-        this.PREVIOUS_LOCATION = ROUTES_PATH['Bills']
-        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION
-        this.document.body.style.backgroundColor="#fff"
-      })
 
+    const handleLoginFailure = (err) => {
+      return this.createUser(user);
+    };
+  
+    this.login(user)
+      .catch(handleLoginFailure)
+      .then(() => {
+        this.onNavigate(ROUTES_PATH['Bills']);
+        this.PREVIOUS_LOCATION = ROUTES_PATH['Bills'];
+        PREVIOUS_LOCATION = this.PREVIOUS_LOCATION;
+        this.document.body.style.backgroundColor = "#fff";
+      });
   }
 
   handleSubmitAdmin = e => {
