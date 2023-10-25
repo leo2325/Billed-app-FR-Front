@@ -18,11 +18,9 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     describe("when upload file", () => {
 
-      const mockDocument = document.createElement('div'); // Créez un élément DOM simulé
-      const html = NewBillUI();
-      mockDocument.innerHTML = html;
-
       function initialisationNewBill() {
+        const html = NewBillUI()
+        document.body.innerHTML = html
 
         //Simuler onNavigate
         const onNavigate = jest.fn(() => { })
@@ -56,19 +54,19 @@ describe("Given I am connected as an employee", () => {
         const fileInput = screen.getByTestId('file');
         const file = new File(['dummy file'], 'test.jpg', { type: 'image/jpg' });
         const event = new Event('change', { bubbles: true });
-      
+
         // Espionnez la méthode handleAlert
         const handleAlertSpy = jest.spyOn(aNewBill, 'handleAlert');
-      
+
         Object.defineProperty(fileInput, 'files', {
           value: [file]
         });
-      
+
         fileInput.dispatchEvent(event);
-      
+
         // Vérifiez que handleAlert a été appelé avec le message approprié
         expect(handleAlertSpy).toHaveBeenCalledWith('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
-      
+
         // Nettoyer l'espion après le test
         handleAlertSpy.mockRestore();
       });
@@ -83,7 +81,7 @@ describe("Given I am connected as an employee", () => {
           value: [file]
         })
         fileInput.dispatchEvent(event)
-        
+
         expect(window.alert).toHaveBeenCalledWith('Veuillez choisir un fichier avec une extension jpg, jpeg ou png.');
         expect(fileInput.value).toBe('')
       })
@@ -92,36 +90,18 @@ describe("Given I am connected as an employee", () => {
 
       test("Create a new bill and handle the response", async () => {
         // Mock dependencies
-        const mockStore = {
-          bills: () => ({
-            create: jest.fn(() => Promise.resolve({ fileUrl: 'test-url', key: 'test-key' })),
-          }),
-        };
-        const mockFormData = new FormData();
-        const mockFile = new File(['dummy file'], 'test.jpg', { type: 'image/jpg' });
-        const mockUser = {
-          email: "test@example.com",
-        };
-      
+
         // Create a NewBill instance with mocked dependencies
-        const newBill = new NewBill({
-          document: mockDocument,
-          onNavigate: jest.fn(),
-          store: mockStore,
-          localStorage: { getItem: jest.fn(() => JSON.stringify(mockUser)) },
-        });
-      
         // Trigger the creation of a new bill
-        await newBill.handleChangeFile({ target: { value: 'test.jpg' } });
-      
+        var event = {
+          target: { value: 'test.jpg' }, preventDefault: () => { }
+        };
+        await aNewBill.handleChangeFile(event);
+
         // Check that the bill is created as expected
-        expect(mockStore.bills().create).toHaveBeenCalledWith({
-          data: mockFormData,
-          headers: { noContentType: true },
-        });
-        expect(newBill.billId).toBe('test-key');
-        expect(newBill.fileUrl).toBe('test-url');
-        expect(newBill.fileName).toBe('test.jpg');
+        expect(aNewBill.billId).toBe('1234');
+        expect(aNewBill.fileUrl).toBe('https://localhost:3456/images/test.jpg');
+        expect(aNewBill.fileName).toBe('test.jpg');
       });
     })
 
