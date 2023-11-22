@@ -40,6 +40,10 @@ const rows = (data) => {
   // Enfin Si la condition du ternaire était fausse (c'est-à-dire si data n'existait pas ou était un tableau vide), 
   // la fonction renvoie une chaîne vide ("").
   
+
+  // En résumé, cette fonction prend un tableau de données (data), 
+  // applique une fonction row à chaque élément de ce tableau, 
+  // puis concatène les résultats en une seule chaîne de caractères.s
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
