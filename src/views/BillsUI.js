@@ -20,6 +20,20 @@ const row = (bill) => {
   }
 
   const rows = (data) => {
+    // Tri des données (data.sort(...)): La principale modification apportée à la fonction 
+    // est l'ajout d'une étape de tri des données avant le traitement ultérieur. 
+    // Le tableau data est trié en fonction de la date de chaque élément, du plus récent au plus ancien, 
+    // en utilisant la méthode sort avec une fonction de comparaison.
+    // Cette fonction de comparaison utilise les objets Date pour comparer les dates des éléments. 
+    // Si la date de l'élément a est antérieure à celle de l'élément b, 
+    // la fonction retourne 1 (ce qui signifie que b doit être placé avant a dans le tableau trié), 
+    // sinon elle retourne -1.
+
+    // Modification de la valeur de retour: 
+    // (Au lieu de retourner directement le résultat de l'opération map et join sur le tableau og data) 
+    // la fonction retourne le résultat de ces opérations appliquées sur l' array trié result. 
+    // Si result n'est pas un tableau par ex, si data est null ou undefined, la fonction retourne une chaîne vide ("").
+
     const result = (data && data.length) ? data.sort((a,b) => new Date(a.date) < new Date(b.date) ? 1 : -1 ) : [];
     return Array.isArray(result) ? result.map(bill => row(bill)).join("") : "";
   }
