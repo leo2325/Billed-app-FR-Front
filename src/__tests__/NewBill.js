@@ -106,37 +106,68 @@ describe("Given I am connected as an employee", () => {
     })
 
     //Test d'intégration -> POST Ajouter Erreur 500
+    // Simulation d'une situation où la création d'une facture (POST vers l'API) est exécutée avec succès
+    // Vérifie que le message d'erreur approprié est correctement rendu sur la page
     test("POST bill", async () => {
-      localStorage.setItem("user", JSON.stringify({
-        type: "Employee",
-        email: "a@a"
+      // Arrange
+      jest.spyOn(mockStore, 'bills')
+      jest.spyOn(mockStore.bills(), 'update')
+      // simulation de connexion
+      localStorage.setItem('user', JSON.stringify({
+        type: 'Employee',
+        email: 'a@a'
       }));
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
+      const root = document.createElement('div')
+      root.setAttribute('id', 'root')
       document.body.append(root)
       router()
       window.onNavigate(ROUTES_PATH.NewBill)
-      await waitFor(() => screen.getAllByText("Envoyer"))
+      const buttonSubmit = screen.getAllByText('Envoyer')
+      // Act
+      buttonSubmit[0].click()
+      // Assert
+      expect(mockStore.bills().update).toHaveBeenCalled();
+      await waitFor(() => screen.getAllByText('Mes notes de frais'));
     })
 
     describe("When an error occurs on API", () => {
+      // Simulation d'une situation où la création d'une facture (POST vers l'API) échoue avec un code d'erreur 500
+      // Vérifie que le message d'erreur approprié est correctement rendu sur la page
       test("POST bill fails with 500 message error", async () => {
+        // Ajout d'un bloc try-catch entourant le code du test 
+        // pour capturer toute erreur survenue pendant l'exécution du test 
+        // et l'afficher dans la console.
         try {
+          // Arrange :
+          // jest.spyOn()
+          // Crée une fonction simulée similaire à jest.fn 
+          // mais qui surveille également les appels à objet[methodName]. 
+          // Retourne une fonction simulée de Jest.
           jest.spyOn(mockStore, "bills")
 
+          // La méthode statique Object.defineProperty() 
+          // permet de définir une nouvelle propriété 
+          // ou de modifier une propriété existante, directement sur un objet. 
+          // La méthode renvoie l'objet modifié.
           Object.defineProperty(
             window,
             'localStorage',
             { value: localStorageMock }
           )
-
+          // La méthode setItem() de l'interface Storage, 
+          // lorsque lui sont passées le duo clé-valeur, 
+          // les ajoute à l'emplacement de stockage, 
+          // sinon elle met à jour la valeur si la clé existe déjà.
           window.localStorage.setItem('user', JSON.stringify({
             type: "Employee",
             email: "a@a",
             password: "employee",
             status: "connected"
           }))
-
+          // La méthode navigate() de l'interface WindowClient 
+          // charge une URL (L'emplacement pour naviguer vers) spécifiée dans une page de client contrôlée, 
+          // puis retourne une Promise qui devra être analysée par WindowClient (le demandeur).
+          // (fonctionnement asynchrone : je te promet de faire, mais je suis pas sûr, à toi de vérifier) 
           window.onNavigate(ROUTES_PATH.NewBill)
 
           const root = document.createElement("div")
@@ -144,9 +175,16 @@ describe("Given I am connected as an employee", () => {
           document.body.appendChild(root)
           router()
 
+          // Récupération du bouton clic
           const buttonSubmit = screen.getAllByText('Envoyer')
+          // Act
+          // Simulation du clic sur le btn "Envoyer", 
+          // déclenchant la tentative de création d'une facture.
           buttonSubmit[0].click()
 
+          // Simulation :
+          // Je mocke la méthode bills du store 
+          // pour retourner une promesse rejetée avec une erreur "Erreur 500".
           mockStore.bills.mockImplementationOnce(() => {
             return {
               create: (bill) => {
@@ -158,7 +196,12 @@ describe("Given I am connected as an employee", () => {
           window.onNavigate(ROUTES_PATH.NewBill)
           await new Promise(process.nextTick);
           const message = screen.queryByText(/Erreur 500/)
+          // waitFor() pour attendre que l'interface utilisateur soit mise à jour 
+          // après la promesse rejetée.
           await waitFor(() => {
+            // Assert :
+            // Lorsque le message d'erreur "Erreur 500" est présent sur la page, 
+            // le test est réussi.
             expect(message).toBeTruthy()
           })
 
