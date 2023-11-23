@@ -15,13 +15,25 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+  // méthode qui réagit à l’événement de changement de fichier et effectue plusieurs opérations :
   handleChangeFile = e => {
     e.preventDefault()
+    // file stocke la recherche de la valeur de la recherche entré par l’utilisateur
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    // filePath cible la valeur de l’élément cliqué 
+    // en utilisant une expression régulière afin de récupérer une partie du chemin
     const filePath = e.target.value.split(/\\/g)
+    // fileName extrait le nom du fichier à partir du tableau filePath, 
+    // cela permet de récupérer le nom du fichier lui-même
     const fileName = filePath[filePath.length-1]
+    // formData stocke un objet FormData qui permet de construire facilement des paires clé-valeur 
+    // pour être envoyées dans le corps d'une requête HTTP
     const formData = new FormData()
+    // email, récupère l'adresse de l'utilisateur à partir du localStorage, 
+    // analysée à l'aide de JSON.parse pour extraire la propriété "email".
     const email = JSON.parse(localStorage.getItem("user")).email
+    // ajoute le fichier et l’adresse mail récupéré à l'objet formData 
+    // sous les noms de clé « file" et « email ».
     formData.append('file', file)
     formData.append('email', email)
 
