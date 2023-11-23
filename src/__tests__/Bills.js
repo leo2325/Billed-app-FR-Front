@@ -18,7 +18,7 @@ $.fn.modal = jest.fn(); //<- dû à la fonction de bootstrap non reconnnu par Je
 function initialisationBills() {
   document.body.innerHTML = BillsUI({ data: bills })
 
-  //Simuler onNavigate
+  // Simuler onNavigate - créer une fonction simulée (espion) avec jest.fn(), permettent d'espionner le comportement d'une fonction qui est appelée indirectement par un autre code, plutôt que de tester uniquement la sortie.
   const onNavigate = jest.fn(() => { })
 
   //Simuler store
